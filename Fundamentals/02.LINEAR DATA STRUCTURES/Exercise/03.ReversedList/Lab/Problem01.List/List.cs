@@ -1,20 +1,20 @@
-﻿namespace Problem03.ReversedList
+﻿namespace Problem01.List
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Reflection.Metadata.Ecma335;
 
-    public class ReversedList<T> : IAbstractList<T>
+    public class List<T> : IAbstractList<T>
     {
         private const int DEFAULT_CAPACITY = 4;
         private T[] _items;
 
-        public ReversedList()
-            : this(DEFAULT_CAPACITY)
-        {
+        public List()
+            : this(DEFAULT_CAPACITY) {
         }
 
-        public ReversedList(int capacity)
+        public List(int capacity)
         {
             if (capacity < 0)
             {
@@ -29,7 +29,7 @@
             get
             {
                 this.ValidateIndex(index);
-                return this._items[this.Count - 1 - index];
+                return this._items[index];
             }
             set
             {
@@ -46,6 +46,7 @@
             this._items[this.Count++] = item;
         }
 
+        
         public bool Contains(T item)
         {
             for (int i = 0; i < this.Count; i++)
@@ -59,13 +60,15 @@
             return false;
         }
 
+
+        
         public int IndexOf(T item)
         {
-            for (int i = this.Count - 1; i >= 0; i--)
+            for (int i = 0; i < this.Count; i++)
             {
                 if (this._items[i].Equals(item))
                 {
-                    return this.Count - 1 - i;
+                    return i;
                 }
             }
 
@@ -74,15 +77,15 @@
 
         public void Insert(int index, T item)
         {
-            this.GrowIfNecessary();
             this.ValidateIndex(index);
-            int indexToInsert = this.Count - index;
-            for (int i = this.Count; i > indexToInsert; i--)
+            this.GrowIfNecessary();
+
+            for (int i = this.Count; i > index; i--)
             {
                 this._items[i] = this._items[i - 1];
             }
 
-            this._items[indexToInsert] = item;
+            this._items[index] = item;
             this.Count++;
         }
 
@@ -102,8 +105,7 @@
         public void RemoveAt(int index)
         {
             this.ValidateIndex(index);
-            int indexOfEl = this.Count - 1 - index;
-            for (int i = indexOfEl; i < this.Count - 1; i++)
+            for (int i = index; i < this.Count - 1; i++)
             {
                 this._items[i] = this._items[i + 1];
             }
@@ -114,7 +116,7 @@
 
         public IEnumerator<T> GetEnumerator()
         {
-            for (int i = this.Count - 1; i >= 0; i--)
+            for (int i = 0; i < this.Count; i++)
             {
                 yield return this._items[i];
             }
@@ -125,7 +127,7 @@
 
         private void GrowIfNecessary()
         {
-            if (this.Count == this._items.Length)
+            if(this.Count == this._items.Length)
             {
                 this._items = this.Grow();
             }
