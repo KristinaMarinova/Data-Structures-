@@ -15,45 +15,46 @@
 
         public Tree<int> CreateTreeFromStrings(string[] input)
         {
-            for (int i = 0; i < input.Length; i++)
+            foreach (var line in input)
             {
-                var tokens = input[i].Split(' ').Select(int.Parse).ToArray();
-                var parentInt = tokens[0];
-                var childInt = tokens[1];
+                int[] keys = line.Split().Select(int.Parse).ToArray();
 
-                this.AddEdge(parentInt, childInt);
+                int parentKey = keys[0];
+                int childKey = keys[1];
+
+                this.AddEdge(parentKey, childKey);
             }
-
             return this.GetRoot();
         }
 
         public Tree<int> CreateNodeByKey(int key)
         {
-            return new Tree<int>(key);
+            if (!this.nodesBykeys.ContainsKey(key))
+            {
+                this.nodesBykeys.Add(key, new Tree<int>(key));
+            }
+            return this.nodesBykeys[key];
         }
 
         public void AddEdge(int parent, int child)
         {
-            var childTree = this.CreateNodeByKey(child);
-            if (this.nodesBykeys.ContainsKey(parent))
-            {
-                this.nodesBykeys[parent].AddChild(childTree);
-            }
-            else
-            {
-                var parentTree = this.CreateNodeByKey(parent);
-                this.nodesBykeys.Add(parent, parentTree);
-                this.nodesBykeys[parent].AddChild(childTree);
-            }
+            var parentNode = this.CreateNodeByKey(parent);
+            var childNode = this.CreateNodeByKey(child);
 
-            childTree.AddParent(this.nodesBykeys[parent]);
-            this.nodesBykeys.Add(child, childTree);
+            parentNode.AddChild(childNode);
+            childNode.AddParent(parentNode);
         }
 
         private Tree<int> GetRoot()
         {
-            var kvp = this.nodesBykeys.FirstOrDefault();
-            return kvp.Value;
+            foreach (var keyByNode in this.nodesBykeys)
+            {
+                if(keyByNode.Value.Parent == null)
+                {
+                    return keyByNode.Value;
+                }
+            }
+            return null;
         }
     }
 }
