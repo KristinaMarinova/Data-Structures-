@@ -98,8 +98,6 @@
             {
                 this.RightChild.ForEachInOrder(action);
             }
-
-
         }
 
         private void AsIndentedPreOrderDfs(IAbstractBinaryTree<T> current, int indent, StringBuilder result)
