@@ -15,7 +15,7 @@
             this.Copy(root);
         }
 
-       
+
         public Node<T> Root { get; private set; }
 
         public Node<T> LeftChild { get; private set; }
@@ -90,17 +90,48 @@
 
         public List<T> Range(T lower, T upper)
         {
-            throw new NotImplementedException();
+            var result = new List<T>();
+
+            var queue = new Queue<Node<T>>();
+
+
+
+            return result;
         }
 
         public void DeleteMin()
         {
-            throw new NotImplementedException();
+            if (this.Root == null)
+            {
+                throw new InvalidOperationException();
+            };
+            this.Root = deleteMin(this.Root);
         }
+
+        private Node<T> deleteMin(Node<T> n)
+        {
+            if (n.LeftChild == null)
+                return n.RightChild;
+            n.LeftChild = deleteMin(n.LeftChild);
+            return n;
+        }
+
 
         public void DeleteMax()
         {
-            throw new NotImplementedException();
+            if (this.Root == null)
+            {
+                throw new InvalidOperationException();
+            };
+            this.Root = deleteMax(this.Root);
+        }
+
+        private Node<T> deleteMax(Node<T> n)
+        {
+            if (n.RightChild == null)
+                return n.LeftChild;
+            n.RightChild = deleteMax(n.RightChild);
+            return n;
         }
 
         public int GetRank(T element)
