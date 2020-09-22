@@ -9,24 +9,15 @@
         public BinarySearchTree()
         {
         }
-
         public BinarySearchTree(Node<T> root)
         {
             this.Copy(root);
         }
-
-
         public Node<T> Root { get; private set; }
-
         public Node<T> LeftChild { get; private set; }
-
         public Node<T> RightChild { get; private set; }
-
         public T Value => this.Root.Value;
-
         public int Count => this.ElementsCount();
-
-
         public bool Contains(T element)
         {
             var current = this.Root;
@@ -49,7 +40,6 @@
 
             return false;
         }
-
         public void Insert(T element)
         {
             var toInsert = new Node<T>(element, null, null);
@@ -63,7 +53,6 @@
                 this.InsertRecursive(this.Root, element);
             }
         }
-
         public IAbstractBinarySearchTree<T> Search(T element)
         {
             var current = this.Root;
@@ -82,23 +71,18 @@
 
             return new BinarySearchTree<T>(current);
         }
-
         public void EachInOrder(Action<T> action)
         {
-            throw new NotImplementedException();
-        }
-
+            this.EachInOrder(this.Root, action);
+        }     
         public List<T> Range(T lower, T upper)
         {
-            var result = new List<T>();
+            List<T> queue = new List<T>();
 
-            var queue = new Queue<Node<T>>();
+            this.Range(this.Root, queue, lower, upper);
 
-
-
-            return result;
+            return queue;
         }
-
         public void DeleteMin()
         {
             if (this.Root == null)
@@ -107,16 +91,6 @@
             };
             this.Root = deleteMin(this.Root);
         }
-
-        private Node<T> deleteMin(Node<T> n)
-        {
-            if (n.LeftChild == null)
-                return n.RightChild;
-            n.LeftChild = deleteMin(n.LeftChild);
-            return n;
-        }
-
-
         public void DeleteMax()
         {
             if (this.Root == null)
@@ -125,21 +99,17 @@
             };
             this.Root = deleteMax(this.Root);
         }
-
-        private Node<T> deleteMax(Node<T> n)
-        {
-            if (n.RightChild == null)
-                return n.LeftChild;
-            n.RightChild = deleteMax(n.RightChild);
-            return n;
-        }
-
         public int GetRank(T element)
         {
-            throw new NotImplementedException();
+            if (this.Root == null)
+            {
+                return 0;
+            }
+            var result = new List<T>();
+            Rank(result, element, this.Root);
+
+            return result.Count;
         }
-
-
 
         private void Copy(Node<T> root)
         {
@@ -150,22 +120,18 @@
                 this.Copy(root.RightChild);
             }
         }
-
         private bool IsLess(T element, T value)
         {
             return element.CompareTo(value) < 0;
         }
-
         private bool IsGreater(T element, T value)
         {
             return element.CompareTo(value) > 0;
         }
-
         private bool AreEqual(T element, T value)
         {
             return element.CompareTo(value) == 0;
         }
-
         private int ElementsCount()
         {
             if (this.Root == null)
@@ -179,7 +145,6 @@
 
             return count;
         }
-
         private void CountOrderDfs(Node<T> subtree, ref int count)
         {
             var current = subtree;
@@ -193,7 +158,6 @@
             CountOrderDfs(current.LeftChild, ref count);
             CountOrderDfs(current.RightChild, ref count);
         }
-
         private Node<T> InsertRecursive(Node<T> current, T element)
         {
             var toInsert = new Node<T>(element, null, null);
@@ -220,6 +184,67 @@
             }
 
             return current;
+        }
+        private void EachInOrder(Node<T> node, Action<T> action)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            this.EachInOrder(node.LeftChild, action);
+            action(node.Value);
+            this.EachInOrder(node.RightChild, action);
+        }
+        private void Range(Node<T> node, List<T> list, T startRange, T endRange)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            int nodeInLowerRange = startRange.CompareTo(node.Value);
+            int nodeInHigherRange = endRange.CompareTo(node.Value);
+
+            if (nodeInLowerRange < 0)
+            {
+                this.Range(node.LeftChild, list, startRange, endRange);
+            }
+            if (nodeInLowerRange <= 0 && nodeInHigherRange >= 0)
+            {
+                list.Add(node.Value);
+            }
+            if (nodeInHigherRange > 0)
+            {
+                this.Range(node.RightChild, list, startRange, endRange);
+            }
+        }
+        private Node<T> deleteMin(Node<T> n)
+        {
+            if (n.LeftChild == null)
+                return n.RightChild;
+            n.LeftChild = deleteMin(n.LeftChild);
+            return n;
+        }
+        private Node<T> deleteMax(Node<T> n)
+        {
+            if (n.RightChild == null)
+                return n.LeftChild;
+            n.RightChild = deleteMax(n.RightChild);
+            return n;
+        }
+        private void Rank(List<T> result, T element, Node<T> node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+            if (node.Value.CompareTo(element) < 0)
+            {
+                result.Add(node.Value);
+            }
+            Rank(result, element, node.LeftChild);
+            Rank(result, element, node.RightChild);
         }
     }
 }
