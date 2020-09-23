@@ -36,9 +36,7 @@
             for (; i < smallerSize; i++)
             {
                 if (!firstPath[i].Equals(secondPath[i]))
-                {
-                    break;
-                }
+                { break; }
             }
 
             return firstPath[i - 1];
@@ -65,8 +63,7 @@
             bool rightResult = findNodePath(binaryTree.RightChild, element, currentPath);
             if (rightResult) { return true; }
 
-
-            currentPath.Remove(binaryTree.Value); // value of
+            currentPath.Remove(binaryTree.Value);
 
             return false;
         }
