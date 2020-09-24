@@ -9,7 +9,9 @@
     {
         public BinaryTree(T value, BinaryTree<T> left, BinaryTree<T> right)
         {
-            throw new NotImplementedException();
+            this.Value = value;
+            this.LeftChild = left;
+            this.RightChild = right;
         }
 
         public T Value { get; set; }
@@ -20,7 +22,38 @@
 
         public List<T> TopView()
         {
-            throw new NotImplementedException();
+            var offsetToValueLevel = new SortedDictionary<int, KeyValuePair<T, int>>();
+
+            this.FillDictionaryDfs(this, 0, 1, offsetToValueLevel);
+
+            return offsetToValueLevel
+                .Values
+                .Select(k => k.Key)
+                .ToList();
+        }
+
+        private void FillDictionaryDfs(BinaryTree<T> subtree,
+            int offset,
+            int level,
+            SortedDictionary<int, KeyValuePair<T, int>> offsetToValueLevel)
+        {
+            if (subtree == null)
+            {
+                return;
+            }
+
+            if (!offsetToValueLevel.ContainsKey(offset))
+            {
+                offsetToValueLevel.Add(offset, new KeyValuePair<T, int>(subtree.Value, level));
+            }
+
+            if (level < offsetToValueLevel[offset].Value)
+            {
+                offsetToValueLevel[offset] = new KeyValuePair<T, int>(subtree.Value, level);
+            }
+
+            this.FillDictionaryDfs(subtree.LeftChild, offset - 1, level + 1, offsetToValueLevel);
+            this.FillDictionaryDfs(subtree.RightChild, offset + 1, level + 1, offsetToValueLevel);
         }
     }
 }
