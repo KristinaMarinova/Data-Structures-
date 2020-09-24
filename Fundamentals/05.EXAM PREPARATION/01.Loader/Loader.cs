@@ -5,39 +5,51 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Loader : IBuffer
     {
-        public int EntitiesCount => throw new NotImplementedException();
+        private List<IEntity> _entities;
+
+        public Loader()
+        {
+            this._entities = new List<IEntity>();
+        }
+        public int EntitiesCount => this._entities.Count;
 
         public void Add(IEntity entity)
         {
-            throw new NotImplementedException();
+            this._entities.Add(entity);
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            this._entities.Clear();
         }
 
         public bool Contains(IEntity entity)
         {
-            throw new NotImplementedException();
+            return this.GetById(entity.Id) != null;
         }
 
         public IEntity Extract(int id)
         {
-            throw new NotImplementedException();
+            IEntity found = this.GetById(id);
+            if (found != null)
+            {
+                this._entities.Remove(found);
+            }
+            return found;
         }
 
         public IEntity Find(IEntity entity)
         {
-            throw new NotImplementedException();
+            return this.GetById(entity.Id);
         }
 
         public List<IEntity> GetAll()
         {
-            throw new NotImplementedException();
+            return this._entities;
         }
 
         public IEnumerator<IEntity> GetEnumerator()
@@ -52,7 +64,9 @@
 
         public void Replace(IEntity oldEntity, IEntity newEntity)
         {
-            throw new NotImplementedException();
+            int indexOfEntity = this._entities.IndexOf(oldEntity);
+            this.ValidateEntity(indexOfEntity);
+            this._entities[indexOfEntity] = newEntity;
         }
 
         public List<IEntity> RetainAllFromTo(BaseEntityStatus lowerBound, BaseEntityStatus upperBound)
@@ -78,6 +92,29 @@
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        private IEntity GetById(int id)
+        {
+            for (int i = 0; i < this.EntitiesCount; i++)
+            {
+                var currentEntity = this._entities[i];
+
+                if (currentEntity.Id == id)
+                {
+                    return currentEntity;
+                }
+            }
+
+            return null;
+        }
+
+        private void ValidateEntity(int index)
+        {
+            if (index == -1)
+            {
+                throw new InvalidOperationException("Entity not found");
+            }
         }
     }
 }
