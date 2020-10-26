@@ -43,12 +43,14 @@
         public IEnumerable<T> GetChildren(T element)
         {
             ContainsItemOrThrowExeption(element);
-            return elements[element].Children.Select(n =>n.Value);
+            return elements[element].Children.Select(n => n.Value);
         }
 
         public T GetParent(T element)
         {
-            throw new NotImplementedException();
+            ContainsItemOrThrowExeption(element);
+            var node = elements[element];
+            return node.Parent != null ? node.Parent.Value : default(T);
         }
 
         public bool Contains(T element)
