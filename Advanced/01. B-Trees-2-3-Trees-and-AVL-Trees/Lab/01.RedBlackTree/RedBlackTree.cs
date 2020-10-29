@@ -6,6 +6,8 @@
     public class RedBlackTree<T>
         : IBinarySearchTree<T> where T : IComparable
     {
+        const bool Red = true;
+        const bool Black = false;
         private Node root;
 
         private RedBlackTree(Node node)
@@ -20,6 +22,7 @@
         public void Insert(T element)
         {
             this.root = this.Insert(element, this.root);
+            this.root.Color = Black;
         }
 
         public bool Contains(T element)
@@ -173,6 +176,19 @@
             else if (element.CompareTo(node.Value) > 0)
             {
                 node.Right = this.Insert(element, node.Right);
+            }
+
+            if (this.IsRed(node.Right) && !this.IsRed(node.Left))
+            {
+                node = this.RotateLeft(node);
+            }
+            if (this.IsRed(node.Left) && this.IsRed(node.Left.Left))
+            {
+                node = this.RotateRight(node);
+            }
+            if (this.IsRed(node.Left) && this.IsRed(node.Right))
+            {
+                this.FlipColors(node);
             }
 
             node.Count = 1 + this.Count(node.Left) + this.Count(node.Right);
@@ -336,14 +352,51 @@
             public Node(T value)
             {
                 this.Value = value;
+                this.Color = Red;
             }
 
             public T Value { get; }
             public Node Left { get; set; }
             public Node Right { get; set; }
-
+            public bool Color { get; set; }
             public int Count { get; set; }
         }
 
+        private bool IsRed(Node node)
+        {
+            return node != null && node.Color;
+        }
+
+        private Node RotateLeft(Node node)
+        {
+            Node temp = node.Right;
+            node.Right = temp.Left;
+            temp.Left = node;
+            temp.Color = node.Color;
+            node.Color = Red;
+            node.Count = 1 + Count(node.Left) + Count(node.Right);
+
+            return temp;
+
+        }
+
+        private Node RotateRight(Node node)
+        {
+            Node temp = node.Left;
+            node.Left = temp.Right;
+            temp.Left = node;
+            temp.Color = node.Color;
+            node.Color = Red;
+            node.Count = 1 + Count(node.Left) + Count(node.Right);
+
+            return temp;
+        }
+
+        private void FlipColors(Node node)
+        {
+            node.Color = Red;
+            node.Left.Color = Black;
+            node.Right.Color = Black;
+        }
     }
 }
