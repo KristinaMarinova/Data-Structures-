@@ -5,4 +5,8 @@
     <RootNamespace>_01.RoyaleArena</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SoftUni.Wintellect.PowerCollections" Version="1.1.5733.22550" />
+  </ItemGroup>
+
 </Project>
