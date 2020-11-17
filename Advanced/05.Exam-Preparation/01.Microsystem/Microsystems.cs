@@ -2,62 +2,132 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Microsystems : IMicrosystem
     {
+        List<Computer> computers = new List<Computer>();
+        Dictionary<int, Computer> byNumber = new Dictionary<int, Computer>();
+        Dictionary<Brand, HashSet<Computer>> byBrand = new Dictionary<Brand, HashSet<Computer>>();
+        Dictionary<string, HashSet<Computer>> byColor = new Dictionary<string, HashSet<Computer>>();
+
         public void CreateComputer(Computer computer)
         {
-            throw new NotImplementedException();
+            if (byNumber.ContainsKey(computer.Number))
+            {
+                throw new ArgumentException();
+            }
+            byNumber[computer.Number] = computer;
+
+            if (!byBrand.ContainsKey(computer.Brand))
+            {
+                byBrand[computer.Brand] = new HashSet<Computer>();
+            }
+            byBrand[computer.Brand].Add(computer);
+
+            if (!byColor.ContainsKey(computer.Color))
+            {
+                byColor[computer.Color] = new HashSet<Computer>();
+            }
+            byColor[computer.Color].Add(computer);
+
+            computers.Add(computer);
         }
 
         public bool Contains(int number)
         {
-            throw new NotImplementedException();
+            return byNumber.ContainsKey(number);
         }
 
         public int Count()
         {
-            throw new NotImplementedException();
+            return computers.Count;
         }
 
         public Computer GetComputer(int number)
         {
-            throw new NotImplementedException();
+            if (!byNumber.ContainsKey(number))
+            {
+                throw new ArgumentException();
+            }
+
+            return byNumber[number];
         }
 
         public void Remove(int number)
         {
-            throw new NotImplementedException();
+            if (!byNumber.ContainsKey(number))
+            {
+                throw new ArgumentException();
+            }
+            var computersToRemove = byNumber[number];
+
+            computers.Remove(computersToRemove);
+            byNumber.Remove(number);
+
+            byBrand[computersToRemove.Brand].Remove(computersToRemove);
+            if (byBrand[computersToRemove.Brand].Count == 0)
+            {
+                byBrand.Remove(computersToRemove.Brand);
+            }
+
+            byColor[computersToRemove.Color].Remove(computersToRemove);
+            if (byColor[computersToRemove.Color].Count == 0)
+            {
+                byColor.Remove(computersToRemove.Color);
+            }
         }
 
         public void RemoveWithBrand(Brand brand)
         {
-            throw new NotImplementedException();
+            if (!byBrand.ContainsKey(brand))
+            {
+                throw new ArgumentException();
+            }
+
+            var computersToRemove = byBrand[brand].Select(x => x.Number).ToList();
+
+            foreach (var number in computersToRemove)
+            {
+                Remove(number);
+            }
         }
 
         public void UpgradeRam(int ram, int number)
         {
-            throw new NotImplementedException();
+            var computerToUpgrade = GetComputer(number);
+            if (computerToUpgrade.RAM < ram)
+            {
+                computerToUpgrade.RAM = ram;
+            }
         }
 
         public IEnumerable<Computer> GetAllFromBrand(Brand brand)
         {
-            throw new NotImplementedException();
+            if (!byBrand.ContainsKey(brand))
+            {
+                return Enumerable.Empty<Computer>();
+            }
+            return byBrand[brand].OrderByDescending(x => x.Price);
         }
 
         public IEnumerable<Computer> GetAllWithScreenSize(double screenSize)
         {
-            throw new NotImplementedException();
+            return computers.Where(s => s.ScreenSize == screenSize).OrderByDescending(x => x.Number);
         }
 
         public IEnumerable<Computer> GetAllWithColor(string color)
         {
-            throw new NotImplementedException();
+            if (!byColor.ContainsKey(color))
+            {
+                return Enumerable.Empty<Computer>();
+            }
+            return byColor[color].OrderByDescending(x => x.Price);
         }
 
         public IEnumerable<Computer> GetInRangePrice(double minPrice, double maxPrice)
         {
-            throw new NotImplementedException();
+            return computers.Where(x => minPrice <= x.Price && x.Price <= maxPrice).OrderByDescending(x => x.Price);
         }
     }
 }
