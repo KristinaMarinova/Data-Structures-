@@ -14,11 +14,9 @@ public class Task : IComparable<Task>
 
     public Task(int id, int consumption, Priority priority)
     {
-
         this.Id = id;
         this.Consumption = consumption;
         this.TaskPriority = priority;
-
     }
 
     public int CompareTo(Task other)
